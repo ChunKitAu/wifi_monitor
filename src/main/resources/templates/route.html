@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Dashboard Template for Bootstrap</title>
+
+	<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+			th:src="@{/webjars/jquery/3.3.1/jquery.js}"></script>
+	<script type="text/javascript" src="asserts/js/popper.min.js"
+			th:src="@{/webjars/popper.js/1.11.1/dist/popper.js}"></script>
+	<script type="text/javascript" src="asserts/js/bootstrap.min.js"
+			th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.bundle.js}"></script>
+
+	<!-- Bootstrap core CSS -->
+	<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+	<style type="text/css">
+		/* Chart.js */
+
+		@-webkit-keyframes chartjs-render-animation {
+			from {
+				opacity: 0.99
+			}
+			to {
+				opacity: 1
+			}
+		}
+
+		@keyframes chartjs-render-animation {
+			from {
+				opacity: 0.99
+			}
+			to {
+				opacity: 1
+			}
+		}
+
+		.chartjs-render-monitor {
+			-webkit-animation: chartjs-render-animation 0.001s;
+			animation: chartjs-render-animation 0.001s;
+		}
+	</style>
+
+
+
+<!--	百度地图-->
+	<style type="text/css">
+		body, html {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+
+		#contain{ margin:0 auto;width:auto;height:500px}
+		#allmap{ float:left; width:70%; height:100%;}
+		#right{ float:left; width:30%;height:100%;}
+
+
+		.BMap_cpyCtrl {
+			display:none;
+		}
+		.anchorBL{
+			display:none;
+		}
+
+		p{margin-left:5px; font-size:14px;}
+	</style>
+
+	<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=i1d8mNN9rfXDNe5heQDtlgXSYCYSz34b"></script>
+</head>
+
+<body>
+<!--引入抽取的topbar-->
+<!--模板名：会使用thymeleaf的前后缀配置规则进行解析-->
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+	<div class="row">
+		<!--引入侧边栏-->
+		<div th:replace="commons/bar::#sidebar(activeUri='map')"></div>
+
+		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
+			<div  style="display: inline" >
+				<a class="btn btn-primary btn-lg" th:src="map">人群观测 </a>
+			</div>
+
+			<div  style="display: inline" >
+				<a class="btn btn-primary btn-lg">轨迹跟踪 </a>
+			</div>
+
+			<div  style="display: inline" >
+				<a class="btn btn-primary btn-lg">折线路径 </a>
+			</div>
+
+			<div class="dropdown" style="display: inline" >
+				<button class="btn btn-lg dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="true" >
+					时间选取
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dLabel">
+					<li>最近五分钟</li>
+					<li>最近一小时</li>
+					<li>最近一天</li>
+					<li>不限时间</li>
+				</ul>
+			</div>
+
+			<div id="contain">
+				<div id="allmap" class="left"></div>
+				<div id="right">
+					<h4>轨迹列表:</h4>
+					<br/>
+					<select id="routeList" multiple="multiple" size="15px" style='width:150px;'></select>
+				</div>
+			</div>
+
+
+
+		</main>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(function () {
+		var mac =getSessionMac();
+		if(mac != null) {
+			initRouteList(mac);
+		}
+	})
+
+
+	function initMap(route) {
+		createMap(route);
+		setMapEvent();
+		addMapControl();
+	}
+
+
+	function initRouteList(mac) {
+		$.ajax({
+			url:"/route/"+mac,
+			type:"GET",
+			success:function (result) {
+				if(result.code == 100){
+					var routes = result.extend.routes;
+					initMap(routes[0]);
+					$.each(routes,function (index,item) {
+						$("<option></option>")
+								.append(item.start_time)
+								.attr("id","option"+item.id)
+								.appendTo("#routeList");
+
+						//添加双击事件
+						var option = window.document.getElementById("option"+item.id);
+						option.addEventListener("dblclick",function (ev) {
+							changeMap(item);
+						})
+
+					})
+				}
+			}
+		})
+	}
+
+	function changeMap(route) {
+		//清除原有覆盖物
+		map.clearOverlays();
+
+		//路径
+		var walking = new BMap.WalkingRoute(map, {
+			renderOptions: {
+				map: map,
+				autoViewport: true
+			}
+		});
+
+		var start = new BMap.Marker(new BMap.Point(route.start_x,route.start_y));
+		var end = new BMap.Marker(new BMap.Point(route.end_x,route.end_y));
+		walking.search(start, end);
+
+
+	}
+
+	function getSessionMac() {
+		var mac ="";
+		$.ajax({
+			url:"/getSessionMac",
+			type:"GET",
+			async:false,//同步
+			success:function (result) {
+				if(result.code == 100){
+					mac = result.extend.mac;
+				}
+			}
+		})
+		return mac;
+	}
+	
+	
+
+	function createMap(route) {
+
+		// 百度地图API功能
+		var map = new BMap.Map("allmap");
+		map.centerAndZoom(new BMap.Point(113.545741,22.371249), 17);
+
+		map.enableScrollWheelZoom();
+
+		//路径
+		var walking = new BMap.WalkingRoute(map, {
+			renderOptions: {
+				map: map,
+				autoViewport: true
+			}
+		});
+
+		//路径
+		var walking = new BMap.WalkingRoute(map, {
+			renderOptions: {
+				map: map,
+				autoViewport: true
+			}
+		});
+
+		var start = new BMap.Marker(new BMap.Point(route.start_x,route.start_y));
+		var end = new BMap.Marker(new BMap.Point(route.end_x,route.end_y));
+		walking.search(start, end);
+
+		window.map = map;//将map变量存储在全局
+
+	}
+
+
+	//地图事件设置函数：
+	function setMapEvent(){
+		map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
+		map.enableScrollWheelZoom();//启用地图滚轮放大缩小
+		map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
+		map.enableKeyboard();//启用键盘上下左右键移动地图
+	}
+
+	//地图控件添加函数：
+	function addMapControl(){
+		//向地图中添加缩放控件
+		var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_ZOOM});
+		map.addControl(ctrl_nav);
+		//向地图中添加缩略图控件
+		var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
+		map.addControl(ctrl_ove);
+		//向地图中添加比例尺控件
+		var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+		map.addControl(ctrl_sca);
+	}
+
+
+</script>
+
+
+</body>
+</html>

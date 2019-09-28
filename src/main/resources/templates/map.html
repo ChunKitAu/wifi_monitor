@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Dashboard Template for Bootstrap</title>
+
+	<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+			th:src="@{/webjars/jquery/3.3.1/jquery.js}"></script>
+	<script type="text/javascript" src="asserts/js/popper.min.js"
+			th:src="@{/webjars/popper.js/1.11.1/dist/popper.js}"></script>
+	<script type="text/javascript" src="asserts/js/bootstrap.min.js"
+			th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.bundle.js}"></script>
+
+	<!-- Bootstrap core CSS -->
+	<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+	<style type="text/css">
+		/* Chart.js */
+
+		@-webkit-keyframes chartjs-render-animation {
+			from {
+				opacity: 0.99
+			}
+			to {
+				opacity: 1
+			}
+		}
+
+		@keyframes chartjs-render-animation {
+			from {
+				opacity: 0.99
+			}
+			to {
+				opacity: 1
+			}
+		}
+
+		.chartjs-render-monitor {
+			-webkit-animation: chartjs-render-animation 0.001s;
+			animation: chartjs-render-animation 0.001s;
+		}
+	</style>
+
+	<style type="text/css">
+		body, html {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#allmap{width:100%;height:600px;margin-top: 10px;}
+		.BMap_cpyCtrl {
+			display:none;
+		}
+		.anchorBL{
+			display:none;
+		}
+		p{margin-left:5px; font-size:14px;}
+	</style>
+
+	<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=i1d8mNN9rfXDNe5heQDtlgXSYCYSz34b"></script>
+</head>
+
+<body>
+<!--引入抽取的topbar-->
+<!--模板名：会使用thymeleaf的前后缀配置规则进行解析-->
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+	<div class="row">
+		<!--引入侧边栏-->
+		<div th:replace="commons/bar::#sidebar(activeUri='map')"></div>
+		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
+			<div  style="display: inline" >
+				<a class="btn btn-primary btn-lg" th:src="map">人群观测 </a>
+			</div>
+
+			<div  style="display: inline" >
+				<a class="btn btn-primary btn-lg">轨迹跟踪 </a>
+			</div>
+
+			<div  style="display: inline" >
+				<a class="btn btn-primary btn-lg">折线路径 </a>
+			</div>
+
+			<div class="dropdown" style="display: inline" >
+				<button class="btn btn-lg dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="true" >
+					时间选取
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dLabel">
+					<li>最近五分钟</li>
+					<li>最近一小时</li>
+					<li>最近一天</li>
+					<li>不限时间</li>
+				</ul>
+			</div>
+
+			<div id="allmap"></div>
+
+		</main>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var time = 0;
+
+	function initMap() {
+		createMap();
+		setMapEvent();
+		addMapControl();
+	}
+
+
+
+	function createMap() {
+
+		var id = getSession();
+		var seekers = getSeekerByZoneId(id);
+		var zone = getZone(id);
+
+		// 百度地图API功能
+		var mp = new BMap.Map("allmap");
+		if(zone != null){
+			mp.centerAndZoom(new BMap.Point(zone.x,zone.y), 17);
+		}else{
+			mp.centerAndZoom(new BMap.Point(113.545741,22.371249), 17);
+		}
+		mp.enableScrollWheelZoom();
+
+		// 复杂的自定义覆盖物
+		// function ComplexCustomOverlay(point, text, mouseoverText){
+		// 	this._point = point;
+		// 	this._text = text;
+		// 	this._overText = mouseoverText;
+		// }
+		function ComplexCustomOverlay(point){
+			this._point = point;
+		}
+
+
+
+		ComplexCustomOverlay.prototype = new BMap.Overlay();
+		ComplexCustomOverlay.prototype.initialize = function(map){
+			this._map = map;
+			var div = this._div = document.createElement("div");
+			div.style.position = "absolute";
+			div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+			// div.style.backgroundColor = "#EE5D5B";
+			// div.style.border = "1px solid #BC3B3A";
+			// div.style.color = "white";
+			div.style.height = "18px";
+			div.style.width="8px";
+			// div.style.padding = "2px";
+			// div.style.lineHeight = "18px";
+			// div.style.whiteSpace = "nowrap";
+			// div.style.MozUserSelect = "none";
+			// div.style.fontSize = "12px"
+
+
+			// var span = this._span = document.createElement("span");
+			// div.appendChild(span);
+			// span.appendChild(document.createTextNode(this._text));
+			// var that = this;
+
+			var arrow = this._arrow = document.createElement("div");
+			// arrow.style.background = "url(//map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+			arrow.style.position = "absolute";
+			arrow.style.width = "11px";
+			arrow.style.height = "10px";
+			arrow.style.top = "22px";
+			arrow.style.left = "10px";
+			// arrow.style.overflow = "hidden";
+			div.appendChild(arrow);
+
+			// div.onmouseover = function(){
+			// 	this.style.backgroundColor = "#6BADCA";
+			// 	this.style.borderColor = "#0000ff";
+			// 	this.getElementsByTagName("span")[0].innerHTML = that._overText;
+			// 	arrow.style.backgroundPosition = "0px -20px";
+			// }
+			//
+			// div.onmouseout = function(){
+			// 	this.style.backgroundColor = "#EE5D5B";
+			// 	this.style.borderColor = "#BC3B3A";
+			// 	this.getElementsByTagName("span")[0].innerHTML = that._text;
+			// 	arrow.style.backgroundPosition = "0px 0px";
+			// }
+
+			mp.getPanes().labelPane.appendChild(div);
+
+			return div;
+		}
+
+		ComplexCustomOverlay.prototype.draw = function(){
+			var map = this._map;
+			var pixel = map.pointToOverlayPixel(this._point);
+			this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+			this._div.style.top  = pixel.y - 30 + "px";
+		}
+
+
+		//自定义覆盖物添加事件方法
+		ComplexCustomOverlay.prototype.addEventListener = function(event,fun){
+			this._div['on'+event] = fun;
+		}
+
+
+
+		$.each(seekers,function (index,item) {
+			var point = new BMap.Point(item.x,item.y);
+			var marker = new BMap.Marker(point);
+
+			var opts = {
+				width : 80,     // 信息窗口宽度
+				height: 30,     // 信息窗口高度
+				title : " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   当前：   " , // 信息窗口标题
+			}
+			var infoWindow = new BMap.InfoWindow("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+getInfoBySeekerId(item.id).length+"个信号", opts);  // 创建信息窗口对象
+			setmouse(marker,infoWindow);
+
+			mp.addOverlay(marker);
+			var circle = new BMap.Circle(point,250,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+			mp.addOverlay(circle);
+
+
+			//添加点击事件
+			marker.addEventListener("click",function () {
+			    $.ajax({
+                    url:"/SetSessionseekerId/"+item.id,
+                    type:"POST",
+                    success:function(result) {
+                        if (result.code == 100){
+                            window.location.href="/path";
+                        }
+                    }
+                })
+			})
+
+		});
+
+		window.map = mp;
+
+		function setmouse(marck,infoWindow){
+			marck.addEventListener("mouseover", function(e){
+				openInfo(infoWindow,e)
+			});
+		}
+
+		function openInfo(content,e){
+			var p = e.target;
+			var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+			mp.openInfoWindow(content,point); //开启信息窗口
+
+			window.map=mp;
+		}
+
+		function getInfoBySeekerId(seekerId) {
+			var infos = "";
+			$.ajax({
+				url:"/getInfoByseekerId/"+seekerId,
+				type:"GET",
+				async:false,//同步
+				success:function (data) {
+					if(data.code == 100){
+						infos = data.extend.infos;
+						console.log(infos[0].time);
+						var day = new Date(infos[0].time);
+						console.log(day);
+						console.log(new Date());
+						console.log(new Date().getTime()-day.getTime());
+					}
+				}
+			})
+			return infos;
+		}
+
+	}
+
+
+	//地图事件设置函数：
+	function setMapEvent(){
+		map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
+		map.enableScrollWheelZoom();//启用地图滚轮放大缩小
+		map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
+		map.enableKeyboard();//启用键盘上下左右键移动地图
+	}
+
+	//地图控件添加函数：
+	function addMapControl(){
+		//向地图中添加缩放控件
+		var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_ZOOM});
+		map.addControl(ctrl_nav);
+		//向地图中添加缩略图控件
+		var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
+		map.addControl(ctrl_ove);
+		//向地图中添加比例尺控件
+		var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+		map.addControl(ctrl_sca);
+	}
+
+
+
+	//获取加载的覆盖点
+	function getSeekerByZoneId(id) {
+		var seekers ="";
+		$.ajax({
+			url:"/getSeekerByZoneId/"+id,
+			type:"GET",
+			async: false,//同步
+			success:function (result) {
+				if(result.code == 100){
+					seekers = result.extend.seekers;
+				}
+			}
+		})
+		return seekers;
+	}
+
+	//获取选取地图id
+	function getSession() {
+		var id = "";
+		$.ajax({
+			url:"/getSessionZoneId",
+			type:"GET",
+			async: false,//同步
+			success:function (result) {
+				if(result.code == 100){
+					id = result.extend.zoneId;
+				}
+				if(result.code == 200){
+					alert("请选取地图");
+				}
+			}
+		})
+		return id;
+	}
+
+	//获取选择的地图
+	function getZone(id) {
+		var zone = "";
+		$.ajax({
+			url:"/getZoneById/"+id,
+			type:"GET",
+			async: false,//同步
+			success:function (result) {
+				if(result.code == 100){
+					zone = result.extend.zone;
+				}
+			}
+		})
+		return zone;
+	}
+
+
+	initMap();
+
+</script>
+
+
+</body>
+</html>
