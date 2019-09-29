@@ -127,8 +127,6 @@
 
 				var zones = result.extend.pageInfo.list;
 
-				// console.log(zones);
-
 				var id = getSession();
 
 				$.each(zones,function (index,item) {
@@ -153,7 +151,6 @@
 						choseBtn.addClass("btn btn-success btn-sm chose_btn").append("选取");
 					}
 
-					//添加一个自定义属性,用来表示要删除的id
 					choseBtn.attr("chose-id",item.id);
 					var choseTd = $("<td></td>").append(choseBtn);
 
@@ -170,7 +167,8 @@
 
 			$(document).on("click",".chose_btn",function () {
 				$.ajax({
-					url:"/setSessionZoneId/"+$(this).attr("chose-id"),
+					// url:"/setSessionZoneId/"+$(this).attr("chose-id"),
+					url:"/setIntegerSession/zoneId="+$(this).attr("chose-id"),
 					type:"POST",
 					success:function (result) {
 						if(result.code == 100){
@@ -185,12 +183,11 @@
 			function getSession() {
 				var id = "";
 				$.ajax({
-					url:"/getSessionZoneId",
+					url:"/getSession/zoneId",
 					type:"GET",
 					async: false,//同步
 					success:function (result) {
 						if(result.code == 100){
-							//加载覆盖物
 							id = result.extend.zoneId;
 						}
 					}

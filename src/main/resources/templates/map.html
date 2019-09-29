@@ -94,10 +94,10 @@
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="dLabel">
-					<li>最近五分钟</li>
-					<li>最近一小时</li>
-					<li>最近一天</li>
-					<li>不限时间</li>
+					<li><a id="5min">最近五分钟</a></li>
+					<li><a id="1hour">最近一小时</a></li>
+					<li><a id="1day">最近一天</a></li>
+					<li><a id="noTime">不限时间</a></li>
 				</ul>
 			</div>
 
@@ -108,22 +108,19 @@
 </div>
 
 <script type="text/javascript">
-	var time = 0;
+	var times = Number.POSITIVE_INFINITY;//无限大
+	var id = getSession();
 
 	function initMap() {
-		createMap();
+		createMap(getZone(id));
+		createMarks(getSeekerByZoneId(id));
 		setMapEvent();
 		addMapControl();
 	}
 
 
 
-	function createMap() {
-
-		var id = getSession();
-		var seekers = getSeekerByZoneId(id);
-		var zone = getZone(id);
-
+	function createMap(zone) {
 		// 百度地图API功能
 		var mp = new BMap.Map("allmap");
 		if(zone != null){
@@ -133,17 +130,9 @@
 		}
 		mp.enableScrollWheelZoom();
 
-		// 复杂的自定义覆盖物
-		// function ComplexCustomOverlay(point, text, mouseoverText){
-		// 	this._point = point;
-		// 	this._text = text;
-		// 	this._overText = mouseoverText;
-		// }
 		function ComplexCustomOverlay(point){
 			this._point = point;
 		}
-
-
 
 		ComplexCustomOverlay.prototype = new BMap.Overlay();
 		ComplexCustomOverlay.prototype.initialize = function(map){
@@ -151,47 +140,15 @@
 			var div = this._div = document.createElement("div");
 			div.style.position = "absolute";
 			div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
-			// div.style.backgroundColor = "#EE5D5B";
-			// div.style.border = "1px solid #BC3B3A";
-			// div.style.color = "white";
 			div.style.height = "18px";
 			div.style.width="8px";
-			// div.style.padding = "2px";
-			// div.style.lineHeight = "18px";
-			// div.style.whiteSpace = "nowrap";
-			// div.style.MozUserSelect = "none";
-			// div.style.fontSize = "12px"
-
-
-			// var span = this._span = document.createElement("span");
-			// div.appendChild(span);
-			// span.appendChild(document.createTextNode(this._text));
-			// var that = this;
-
 			var arrow = this._arrow = document.createElement("div");
-			// arrow.style.background = "url(//map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
 			arrow.style.position = "absolute";
 			arrow.style.width = "11px";
 			arrow.style.height = "10px";
 			arrow.style.top = "22px";
 			arrow.style.left = "10px";
-			// arrow.style.overflow = "hidden";
 			div.appendChild(arrow);
-
-			// div.onmouseover = function(){
-			// 	this.style.backgroundColor = "#6BADCA";
-			// 	this.style.borderColor = "#0000ff";
-			// 	this.getElementsByTagName("span")[0].innerHTML = that._overText;
-			// 	arrow.style.backgroundPosition = "0px -20px";
-			// }
-			//
-			// div.onmouseout = function(){
-			// 	this.style.backgroundColor = "#EE5D5B";
-			// 	this.style.borderColor = "#BC3B3A";
-			// 	this.getElementsByTagName("span")[0].innerHTML = that._text;
-			// 	arrow.style.backgroundPosition = "0px 0px";
-			// }
-
 			mp.getPanes().labelPane.appendChild(div);
 
 			return div;
@@ -210,76 +167,77 @@
 			this._div['on'+event] = fun;
 		}
 
+		//创建全局变量
+		window.map = mp;
+	}
 
+	function createMarks(seekers){
 
+		window.map.clearOverlays();
+		var mp = window.map;
 		$.each(seekers,function (index,item) {
 			var point = new BMap.Point(item.x,item.y);
 			var marker = new BMap.Marker(point);
+
+			var mac = getInfoBySeekerId(item.id);
 
 			var opts = {
 				width : 80,     // 信息窗口宽度
 				height: 30,     // 信息窗口高度
 				title : " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   当前：   " , // 信息窗口标题
 			}
-			var infoWindow = new BMap.InfoWindow("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+getInfoBySeekerId(item.id).length+"个信号", opts);  // 创建信息窗口对象
+			var infoWindow = new BMap.InfoWindow("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+mac.length+"个信号", opts);  // 创建信息窗口对象
+
 			setmouse(marker,infoWindow);
 
 			mp.addOverlay(marker);
 			var circle = new BMap.Circle(point,250,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
 			mp.addOverlay(circle);
 
-
-			//添加点击事件
-			marker.addEventListener("click",function () {
-			    $.ajax({
-                    url:"/SetSessionseekerId/"+item.id,
-                    type:"POST",
-                    success:function(result) {
-                        if (result.code == 100){
-                            window.location.href="/path";
-                        }
-                    }
-                })
-			})
-
+			if(mac.length > 0){
+				//添加点击事件
+				marker.addEventListener("click",function () {
+					$.ajax({
+						url:"/setIntegerSession/seekerId="+item.id,
+						type:"POST",
+						success:function(result) {
+							if (result.code == 100){
+								window.location.href="/path";
+							}
+						}
+					})
+				})
+			}
 		});
+	}
 
-		window.map = mp;
 
-		function setmouse(marck,infoWindow){
-			marck.addEventListener("mouseover", function(e){
-				openInfo(infoWindow,e)
-			});
-		}
+	function setmouse(marck,infoWindow){
+		marck.addEventListener("mouseover", function(e){
+			openInfo(infoWindow,e)
+		});
+	}
 
-		function openInfo(content,e){
-			var p = e.target;
-			var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-			mp.openInfoWindow(content,point); //开启信息窗口
+	function openInfo(content,e){
+		var p = e.target;
+		var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+		window.map.openInfoWindow(content,point); //开启信息窗口
 
-			window.map=mp;
-		}
+	}
 
-		function getInfoBySeekerId(seekerId) {
-			var infos = "";
-			$.ajax({
-				url:"/getInfoByseekerId/"+seekerId,
-				type:"GET",
-				async:false,//同步
-				success:function (data) {
-					if(data.code == 100){
-						infos = data.extend.infos;
-						console.log(infos[0].time);
-						var day = new Date(infos[0].time);
-						console.log(day);
-						console.log(new Date());
-						console.log(new Date().getTime()-day.getTime());
-					}
+	function getInfoBySeekerId(seekerId) {
+		var infos = "";
+		$.ajax({
+			url:"/getInfoByseekerId/"+seekerId,
+			type:"GET",
+			async:false,//同步
+			success:function (data) {
+				if(data.code == 100){
+					infos = data.extend.infos;
 				}
-			})
-			return infos;
-		}
-
+			}
+		})
+		return infos;
 	}
 
 
@@ -326,7 +284,8 @@
 	function getSession() {
 		var id = "";
 		$.ajax({
-			url:"/getSessionZoneId",
+			// url:"/getSessionZoneId",
+            url:"/getSession/zoneId",
 			type:"GET",
 			async: false,//同步
 			success:function (result) {
@@ -358,8 +317,31 @@
 	}
 
 
-	initMap();
+	function resetMark(time){
+        $.ajax({
+            // url:"/setSessionZoneId/"+$(this).attr("chose-id"),
+            url:"/setIntegerSession/times="+time,
+            type:"POST",
+            success:function (result) {
+                if(result.code == 100){
+                    createMarks(getSeekerByZoneId(id));
+                }
+            }
+        });
+    }
 
+	$("#5min").click(function (ev) {
+        resetMark(300000);
+	});
+	$("#1hour").click(function (ev) {
+        resetMark(3600000);
+	});$("#1day").click(function (ev) {
+        resetMark(86400000);
+	});$("#noTime").click(function (ev) {
+        resetMark(-1);//无限大
+	});
+
+	initMap();
 </script>
 
 

@@ -2,6 +2,9 @@ package com.chunkit.wifi_monitor.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @auther ChunKit
@@ -15,13 +18,14 @@ public class redirectController {
         return "index";
     }
 
-    @GetMapping("/map")
-    public String toMap(){
+    @GetMapping("/map/{times}")
+    public String toMap(@PathVariable("times") Integer times, HttpServletRequest request){
+        request.getSession().setAttribute("times",times);
         return "map";
     }
 
     @GetMapping("/path")
-    public String toPathPage(){
+    public String toPathPage(HttpServletRequest request){
         return "path";
     }
 

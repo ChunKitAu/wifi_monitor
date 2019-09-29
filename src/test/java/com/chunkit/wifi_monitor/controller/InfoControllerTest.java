@@ -22,12 +22,10 @@ public class InfoControllerTest {
     InfoMapper infoMapper;
 
     @Test
-    public void getInfoBySeekerId() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        System.out.println(sdf.format(date));
-        Date date2 = sdf.parse("2019-09-27 06:48:53");
-        System.out.println(date.getTime());
-        System.out.println(date2.getTime());
+    public void getInfoBySeekerId(){
+        Long t1 = System.currentTimeMillis();
+        System.out.println(t1);
+
+
     }
 }

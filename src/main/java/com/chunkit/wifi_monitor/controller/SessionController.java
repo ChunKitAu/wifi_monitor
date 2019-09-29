@@ -20,62 +20,38 @@ public class SessionController {
 
     Msg msg;
 
-    //添加选取地图的id
-    @PostMapping("/setSessionZoneId/{id}")
+    @PostMapping("/setIntegerSession/{key}={value}")
     @ResponseBody
-    public Msg setSessionZoneId(@PathVariable("id") Integer id, HttpServletRequest request){
+    public Msg setIntegerSession(@PathVariable("key") String key,@PathVariable("value") Integer value, HttpServletRequest request){
         HttpSession session = request.getSession();
-        session.removeAttribute("zoneId");
-        session.setAttribute("zoneId",id);
+        session.removeAttribute(key);
+        session.setAttribute(key,value);
         return Msg.Success();
     }
 
-    @GetMapping("/getSessionZoneId")
+    @PostMapping("/setStringSession/{key}={value}")
     @ResponseBody
-    public Msg getSessionZoneId(HttpServletRequest request){
-
-        if(request.getSession().getAttribute("zoneId") != null){
-            return msg.Success().add("zoneId",request.getSession().getAttribute("zoneId").toString());
-        }else return msg.fail();
-    }
-
-    //添加选取设备的id
-    @PostMapping("/SetSessionseekerId/{seekerId}")
-    @ResponseBody
-    public Msg SetSessionseekerId(@PathVariable("seekerId") Integer seekerId, HttpServletRequest request){
-        System.out.println(seekerId);
+    public Msg setStringSession(@PathVariable("key") String key,@PathVariable("value") String value, HttpServletRequest request){
         HttpSession session = request.getSession();
-        session.removeAttribute("seekerId");
-        session.setAttribute("seekerId",seekerId);
+        session.removeAttribute(key);
+        session.setAttribute(key,value);
         return Msg.Success();
     }
 
-
-    @GetMapping("/getSessionseekerId")
+    @GetMapping("/getSession/{key}")
     @ResponseBody
-    public Msg getSessionseekerId(HttpServletRequest request){
-
-        if(request.getSession().getAttribute("seekerId") != null){
-            return msg.Success().add("seekerId",request.getSession().getAttribute("seekerId").toString());
+    public Msg getSession(@PathVariable("key")String key, HttpServletRequest request){
+        if(request.getSession().getAttribute(key) != null){
+            return msg.Success().add(key,request.getSession().getAttribute(key));
         }else return msg.fail();
     }
 
-    @PostMapping("/setSessionMac/{mac}")
+
+
+    @PostMapping("/removeSession/{key}")
     @ResponseBody
-    public Msg setSessionMac(@PathVariable("mac") String mac, HttpServletRequest request){
-        HttpSession session = request.getSession();
-        session.removeAttribute("mac");
-        session.setAttribute("mac",mac);
-        return Msg.Success();
+    public Msg removeSession(@PathVariable("key")String key, HttpServletRequest request){
+            request.getSession().removeAttribute(key);
+            return Msg.Success();
     }
-
-    @GetMapping("/getSessionMac")
-    @ResponseBody
-    public Msg getSessionMac(HttpServletRequest request){
-
-        if(request.getSession().getAttribute("mac") != null){
-            return msg.Success().add("mac",request.getSession().getAttribute("mac").toString());
-        }else return msg.fail();
-    }
-
 }
