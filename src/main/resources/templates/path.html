@@ -158,7 +158,8 @@
 
                         <circle cx="200" cy="200" r="1" stroke="black" stroke-width="0.5" fill="#d2fc00"/>
 
-                    </svg></div>
+                    </svg>
+                    </div>
 
                     <!-- 用来放置信息块-->
                     <div id="infoDiv"></div>
@@ -302,7 +303,16 @@
     }
 
     function initList(seekerId) {
+        //清空List
         $("#macList").empty();
+        //清空mark
+        var myElements = $("rect.mark");
+        if(myElements != null){
+            $.each(myElements,function (index,item) {
+                item.remove();
+            })
+        }
+
 
         var infos = getInfoBySeekerId(seekerId);
 
