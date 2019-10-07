@@ -36,7 +36,7 @@ public class InfoController {
         List<Info> result = new ArrayList<>(infos);
 
 
-        if(times != -1){
+        if(times != -1|| times != null){
             for (Info info: infos) {
                 Long t2 = info.getTime().getTime();
                 if(t - t2 > times){

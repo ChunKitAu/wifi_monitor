@@ -128,7 +128,7 @@
                         </svg>
                         1-2个小时内
                         <svg width=10 height=10 xmlns="http://www.w3.org/2000/svg" version="1.1">
-                            <rect width="10" height="10" style="fill:yellow;stroke:pink;stroke-width:0;opacity:0.5"/>
+                            <rect width="10" height="10" style="fill:blue;stroke:pink;stroke-width:0;opacity:0.5"/>
                         </svg>
                         2-4个小时内
                         <svg width=10 height=10 xmlns="http://www.w3.org/2000/svg" version="1.1">
@@ -200,7 +200,7 @@
 
     })
 
-    function initMark( rssi,id) {
+    function initMark( rssi,id,time) {
         var center = {x:200,y:200}; //圆心坐标
         var radius = getRad(rssi); //半径
 
@@ -218,10 +218,27 @@
         newElement.setAttribute("height", 5);
         newElement.setAttribute("id","mark"+id);
         newElement.setAttribute("class","mark");
-        newElement.style.stroke = "#000000"; //Set stroke colour
+
+        var color =  getColor(time);
+        newElement.style.stroke = color; //Set stroke colour
         newElement.style.strokeWidth = "5px"; //Set stroke width
 
         svg.appendChild(newElement);
+    }
+
+    function getColor(time) {
+        var date1  = new Date(time);
+        console.log(date1);
+        var date2= new Date().getTime() - date1.getTime();
+        if(date2 < 3600000){
+            return "red";
+        }else if(date2 < 7200000){
+            return "orange";
+        }else if(date2 < 14400000){
+            return "blue";
+        }else{
+            return "black"
+        }
     }
 
     //为点信息块和事件
@@ -320,7 +337,7 @@
             $("<option></option>").append(item.id).attr("id","option"+item.id)
                 .attr("mac",item.mac).appendTo("#macList");
 
-            initMark(item.rssi,item.id);
+            initMark(item.rssi,item.id,item.time);
             CreatMouseEvent(item.id,item);
 
             var option = window.document.getElementById("option"+item.id);

@@ -33,4 +33,9 @@ public class redirectController {
     public String toRoutePage(){
         return "route";
     }
+
+    @GetMapping("/heatmap")
+    public String toHotHeatmap(){
+        return "heatmap";
+    }
 }
