@@ -34,8 +34,18 @@ public class redirectController {
         return "route";
     }
 
-    @GetMapping("/heatmap")
+    @GetMapping("/heatMap")
     public String toHotHeatmap(){
         return "heatmap";
+    }
+
+    @GetMapping("/seekers")
+    public String toSeekerListPage(){
+        return "crud/seeker_list";
+    }
+
+    @GetMapping("/zones")
+    public String toZoneListPage(){
+        return "crud/zone_list";
     }
 }

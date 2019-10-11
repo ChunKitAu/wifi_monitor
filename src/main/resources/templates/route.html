@@ -86,15 +86,15 @@
 		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
 
 			<div  style="display: inline" >
-				<a class="btn btn-primary btn-lg" th:src="map">人群观测 </a>
+				<a class="btn btn-primary btn-lg" th:href="@{/map/3600000}">人群观测 </a>
 			</div>
 
 			<div  style="display: inline" >
-				<a class="btn btn-primary btn-lg">轨迹跟踪 </a>
+				<a class="btn btn-primary btn-lg" th:href="@{/heatMap}">热力图 </a>
 			</div>
 
 			<div  style="display: inline" >
-				<a class="btn btn-primary btn-lg">折线路径 </a>
+				<a class="btn btn-primary btn-lg" th:href="@{/path}">轨迹跟踪 </a>
 			</div>
 
 			<div class="dropdown" style="display: inline" >
@@ -144,7 +144,7 @@
 
 	function initRouteList(mac) {
 		$.ajax({
-			url:"/route/"+mac,
+			url:"/path/"+mac,
 			type:"GET",
 			success:function (result) {
 				if(result.code == 100){

@@ -19,7 +19,7 @@ public interface SeekerMapper {
     public Seeker getSeekerById(Integer id);
 
     @Update("update seeker set  isForbidden = #{isForbidden}  where id = #{id} ")
-    public int EditIsForbidden(Integer id,Integer isForbidden);
+    public int UpdateIsForbidden(Integer id,Integer isForbidden);
 
     @Select("select * from seeker where zone_id = #{id} and isForbidden = 0")
     public List<Seeker> getSeekerByZoneId(Integer id);

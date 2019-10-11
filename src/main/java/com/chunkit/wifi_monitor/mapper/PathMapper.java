@@ -9,7 +9,7 @@ import java.util.List;
  * @auther ChunKit
  * @date 2019/9/22-10:15
  */
-public interface RouteMapper {
+public interface PathMapper {
 
 
     @Select("SELECT * FROM path where mac = #{mac}")

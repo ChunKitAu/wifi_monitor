@@ -103,7 +103,7 @@
 			function toPage(pn){
 				var totalRecord,currentPage;
 				$.ajax({
-					url:"/zoneSelectAll",
+					url:"/zone/SelectAll",
 					data:"pn="+pn,
 					type:"GET",
 					success:function(result){
@@ -139,7 +139,7 @@
 					//添加一个自定义属性,用来表示当前要修改的id
 					editBtn.attr("edit-id",item.id);
 					editBtn.click(function () {
-						window.location.href = "/zone/"+item.id;
+						window.location.href = "/toZoneEditPage/"+item.id;
 					});
 					var editTd = $("<td></td>").append(editBtn);
 

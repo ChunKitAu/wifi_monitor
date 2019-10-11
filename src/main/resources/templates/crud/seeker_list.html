@@ -102,8 +102,7 @@
 		function toPage(pn) {
 			var totalRecord,currentPage;
 			$.ajax({
-				url:"/seekerSelectAll",
-				data:"pn="+pn,
+				url:"/seeker/SelectAll?pn="+pn,
 				type:"GET",
 				success:function (result) {
 					// 1.解析并显示表格数据
@@ -137,7 +136,7 @@
 				//添加一个自定义属性,用来表示当前要修改的id
 				editBtn.attr("edit-id",item.id);
 				editBtn.click(function () {
-					window.location.href = "/seeker/"+item.id;
+					window.location.href = "/toSeekerEditPage/"+item.id;
 				});
 				var editTd = $("<td></td>").append(editBtn);
 
@@ -168,11 +167,11 @@
 			var id = $(this).attr("ban-id");
 			var isForbidden = $(this).attr("isForbidden")==1?0:1;
 
-			if ( isForbidden == 1){
+			if ( isForbidden == 0){
 				if(confirm("确认选用【"+id+"设备】吗?")){
 					$(this).attr("btn btn-danger btn-sm ban_btn");
 					$.ajax({
-						url:"/seeker/"+id+isForbidden,
+						url:"/seeker/"+id+"/isForbidden="+isForbidden,
 						type:"PUT",
 						success:function() {
 							$(this).text("已选用");
@@ -185,7 +184,7 @@
 				if(confirm("确认禁用【"+id+"设备】吗?")){
 					$(this).attr("btn btn-danger btn-sm ban_btn");
 					$.ajax({
-						url:"/seeker/"+id+isForbidden,
+						url:"/seeker/"+id+"/isForbidden="+isForbidden,
 						type:"PUT",
 						success:function(result) {
 							if (result.code ==100){
