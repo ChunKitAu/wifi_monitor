@@ -27,17 +27,17 @@ public class ToEditPageController {
     SeekerService seekerService;
 
     @GetMapping("/toSeekerEditPage/{id}")
-    public String ToSeekerEditPage(@PathVariable("id") Integer id, Model model ) {
+    public String ToSeekerEditPage(@PathVariable("id") Integer id, Model model) {
         Seeker seeker = seekerService.getSeekerById(id);
-        model.addAttribute("seeker",seeker);
-        return"crud/seeker_add";
+        model.addAttribute("seeker", seeker);
+        return "crud/seeker_add";
     }
 
 
     @GetMapping("/toZoneEditPage/{id}")
-    public String ToZoneEditPage(@PathVariable("id") Integer id, Model model){
+    public String ToZoneEditPage(@PathVariable("id") Integer id, Model model) {
         Zone zone = zoneService.getZoneById(id);
-        model.addAttribute("zone",zone);
+        model.addAttribute("zone", zone);
         return "crud/zone_add";
     }
 }

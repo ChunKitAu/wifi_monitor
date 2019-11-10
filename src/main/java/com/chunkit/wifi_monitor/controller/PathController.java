@@ -1,6 +1,6 @@
 package com.chunkit.wifi_monitor.controller;
 
-import com.chunkit.wifi_monitor.entity.Msg;
+import com.chunkit.wifi_monitor.util.Msg;
 import com.chunkit.wifi_monitor.entity.Path;
 import com.chunkit.wifi_monitor.service.PathService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +23,14 @@ public class PathController {
     PathService pathService;
 
     @GetMapping("/{mac}")
-    public Msg getPathByMac(@PathVariable("mac") String mac){
+    public Msg getPathByMac(@PathVariable("mac") String mac) {
 
         List<Path> paths = pathService.getPathByMac(mac);
 
-        if(paths.isEmpty()){
+        if (paths.isEmpty()) {
             return Msg.fail();
-        }else{
-            return Msg.Success().add("routes",paths);
+        } else {
+            return Msg.Success().add("routes", paths);
         }
     }
 

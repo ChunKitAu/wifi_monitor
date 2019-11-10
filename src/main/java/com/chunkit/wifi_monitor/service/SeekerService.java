@@ -10,12 +10,12 @@ import java.util.List;
  */
 public interface SeekerService {
 
-    Seeker getSeekerById (Integer id);
+    Seeker getSeekerById(Integer id);
 
     List<Seeker> getSeekerAll();
 
     List<Seeker> getSeekerByZoneId(Integer id);
 
-    Boolean UpdateIsForbidden(Integer id,Integer isForbidden);
+    Boolean UpdateIsForbidden(Integer id, Integer isForbidden);
 
 }

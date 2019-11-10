@@ -14,38 +14,45 @@ import javax.servlet.http.HttpServletRequest;
 public class redirectController {
 
     @GetMapping("/index")
-    public String index(){
+    public String index() {
         return "index";
     }
 
-    @GetMapping("/map/{times}")
-    public String toMap(@PathVariable("times") Integer times, HttpServletRequest request){
-        request.getSession().setAttribute("times",times);
+    @GetMapping("/map")
+    public String toMap(HttpServletRequest request) {
+        request.getSession().setAttribute("times", 3600000);
         return "map";
     }
 
     @GetMapping("/path")
-    public String toPathPage(HttpServletRequest request){
+    public String toPathPage(HttpServletRequest request) {
         return "path";
     }
 
     @GetMapping("/route")
-    public String toRoutePage(){
+    public String toRoutePage() {
         return "route";
     }
 
     @GetMapping("/heatMap")
-    public String toHotHeatmap(){
+    public String toHotHeatmap() {
         return "heatmap";
     }
 
     @GetMapping("/seekers")
-    public String toSeekerListPage(){
+    public String toSeekerListPage() {
         return "crud/seeker_list";
     }
 
     @GetMapping("/zones")
-    public String toZoneListPage(){
+    public String toZoneListPage() {
         return "crud/zone_list";
     }
+
+    @GetMapping("/message")
+    public String toMessagePage(HttpServletRequest request) {
+        request.getSession().setAttribute("date", 604800000);
+        return "message";
+    }
+
 }

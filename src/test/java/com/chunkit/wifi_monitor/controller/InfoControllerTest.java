@@ -22,7 +22,7 @@ public class InfoControllerTest {
     InfoMapper infoMapper;
 
     @Test
-    public void getInfoBySeekerId(){
+    public void getInfoBySeekerId() {
         Long t1 = System.currentTimeMillis();
         System.out.println(t1);
 

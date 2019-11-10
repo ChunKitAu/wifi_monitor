@@ -1,4 +1,4 @@
-package com.chunkit.wifi_monitor.entity;
+package com.chunkit.wifi_monitor.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ public class Msg {
     //提示信息
     private String msg;
     //用户要返回给浏览器的数据
-    private Map<String,Object> extend = new HashMap<String,Object>();
+    private Map<String, Object> extend = new HashMap<String, Object>();
 
 
     public static Msg Success() {
@@ -31,12 +31,11 @@ public class Msg {
     }
 
 
-    public Msg add(String key,Object value) {
+    public Msg add(String key, Object value) {
         this.getExtend().put(key, value);
         return this;
 
     }
-
 
 
     public int getCode() {

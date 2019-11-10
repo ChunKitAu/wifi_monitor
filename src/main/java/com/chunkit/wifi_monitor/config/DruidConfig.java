@@ -18,29 +18,42 @@ import java.util.Map;
 public class DruidConfig {
     @ConfigurationProperties(prefix = "spring.datasource")
     @Bean
-    public DataSource driud(){
+    public DataSource driud() {
         return new DruidDataSource();
     }
-    /**     * 配置Druid的监控
+
+    /**
+     * 配置Druid的监控
      * 1、配置一个管理后台的Servlet
-     * @return     */
+     *
+     * @return
+     */
     @Bean
     public ServletRegistrationBean statViewServlet() {
         ServletRegistrationBean bean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
-        Map<String, String> initParams = new HashMap<>(4);        							initParams.put("loginUsername", "admin");
+        Map<String, String> initParams = new HashMap<>(4);
+        initParams.put("loginUsername", "admin");
         initParams.put("loginPassword", "123456");
         //默认就是允许所有访问
         initParams.put("allow", "");
-        initParams.put("deny", "10.13.8.138");      				 						bean.setInitParameters(initParams);
-        return bean;    }
+        initParams.put("deny", "10.13.8.138");
+        bean.setInitParameters(initParams);
+        return bean;
+    }
+
     /**
      * 2、配置一个web监控的filter
+     *
      * @return
      */
     @Bean
     public FilterRegistrationBean webStatFilter() {
-        FilterRegistrationBean bean = new FilterRegistrationBean();        					bean.setFilter(new WebStatFilter());
-        Map<String, String> initParams = new HashMap<>(1);        							initParams.put("exclusions", "*.js,*.css,/druid/*");        						bean.setInitParameters(initParams);
+        FilterRegistrationBean bean = new FilterRegistrationBean();
+        bean.setFilter(new WebStatFilter());
+        Map<String, String> initParams = new HashMap<>(1);
+        initParams.put("exclusions", "*.js,*.css,/druid/*");
+        bean.setInitParameters(initParams);
         bean.setUrlPatterns(Arrays.asList("/*"));
         return bean;
-    }}
+    }
+}

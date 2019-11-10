@@ -3,67 +3,82 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="">
-	<meta name="author" content="">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-	<title>Dashboard Template for Bootstrap</title>
+    <title>Dashboard Template for Bootstrap</title>
 
-	<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
-			th:src="@{/webjars/jquery/3.3.1/jquery.js}"></script>
-	<script type="text/javascript" src="asserts/js/popper.min.js"
-			th:src="@{/webjars/popper.js/1.11.1/dist/popper.js}"></script>
-	<script type="text/javascript" src="asserts/js/bootstrap.min.js"
-			th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.bundle.js}"></script>
+    <script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
+            th:src="@{/webjars/jquery/3.3.1/jquery.js}"></script>
+    <script type="text/javascript" src="asserts/js/popper.min.js"
+            th:src="@{/webjars/popper.js/1.11.1/dist/popper.js}"></script>
+    <script type="text/javascript" src="asserts/js/bootstrap.min.js"
+            th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.bundle.js}"></script>
 
 
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
 
-	<!-- Bootstrap core CSS -->
-	<link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+    <style type="text/css">
+        /* Chart.js */
 
-	<!-- Custom styles for this template -->
-	<link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
-	<style type="text/css">
-		/* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
 
-		@-webkit-keyframes chartjs-render-animation {
-			from {
-				opacity: 0.99
-			}
-			to {
-				opacity: 1
-			}
-		}
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
 
-		@keyframes chartjs-render-animation {
-			from {
-				opacity: 0.99
-			}
-			to {
-				opacity: 1
-			}
-		}
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
 
-		.chartjs-render-monitor {
-			-webkit-animation: chartjs-render-animation 0.001s;
-			animation: chartjs-render-animation 0.001s;
-		}
-	</style>
+    <style type="text/css">
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
 
-	<style type="text/css">
-		body, html {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
-		#allmap{width:100%;height:600px;margin-top: 10px;}
-		.BMap_cpyCtrl {
-			display:none;
-		}
-		.anchorBL{
-			display:none;
-		}
-		p{margin-left:5px; font-size:14px;}
-	</style>
+        #allmap {
+            width: 100%;
+            height: 600px;
+            margin-top: 10px;
+        }
 
-	<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=i1d8mNN9rfXDNe5heQDtlgXSYCYSz34b"></script>
+        .BMap_cpyCtrl {
+            display: none;
+        }
+
+        .anchorBL {
+            display: none;
+        }
+
+        p {
+            margin-left: 5px;
+            font-size: 14px;
+        }
+    </style>
+
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=i1d8mNN9rfXDNe5heQDtlgXSYCYSz34b"></script>
     <script type="text/javascript" src="//api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
 </head>
 
@@ -73,214 +88,212 @@
 <div th:replace="commons/bar::topbar"></div>
 
 <div class="container-fluid">
-	<div class="row">
-		<!--引入侧边栏-->
-		<div th:replace="commons/bar::#sidebar(activeUri='map')"></div>
-		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="row">
+        <!--引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar(activeUri='map')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
 
-			<div  style="display: inline" >
-				<a class="btn btn-primary btn-lg" th:href="@{/map/3600000}">人群观测 </a>
-			</div>
+            <div style="display: inline">
+                <a class="btn btn-primary btn-lg" th:href="@{/map}">人群观测 </a>
+            </div>
 
-			<div  style="display: inline" >
-				<a class="btn btn-primary btn-lg" th:href="@{/heatMap}">热力图 </a>
-			</div>
+            <div style="display: inline">
+                <a class="btn btn-primary btn-lg" th:href="@{/heatMap}">热力图 </a>
+            </div>
 
-			<div  style="display: inline" >
-				<a class="btn btn-primary btn-lg" th:href="@{/path}">轨迹跟踪 </a>
-			</div>
+            <div style="display: inline">
+                <a class="btn btn-primary btn-lg" th:href="@{/path}">轨迹跟踪 </a>
+            </div>
 
-			<div class="dropdown" style="display: inline" >
-				<button class="btn btn-lg dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
-						aria-haspopup="true" aria-expanded="true" >
-					时间选取
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="dLabel">
-					<li><a id="5min">最近五分钟</a></li>
-					<li><a id="1hour">最近一小时</a></li>
-					<li><a id="1day">最近一天</a></li>
-					<li><a id="noTime">不限时间</a></li>
-				</ul>
-			</div>
+            <div class="dropdown" style="display: inline">
+                <button class="btn btn-lg dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                    时间选取
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dLabel">
+                    <li><a id="5min">最近五分钟</a></li>
+                    <li><a id="1hour">最近一小时</a></li>
+                    <li><a id="1day">最近一天</a></li>
+                    <li><a id="noTime">不限时间</a></li>
+                </ul>
+            </div>
 
-			<div id="allmap"></div>
+            <div id="allmap"></div>
 
-		</main>
-	</div>
+        </main>
+    </div>
 </div>
 
 <script type="text/javascript">
-	var id = getSession();
+    var id = getSession();
 
-	function initMap() {
-		createMap(getZone(id));
+    function initMap() {
+        createMap(getZone(id));
         createHeatMarks(getSeekerByZoneId(id));
-		setMapEvent();
-		addMapControl();
-	}
+        setMapEvent();
+        addMapControl();
+    }
 
 
+    function createMap(zone) {
+        // 百度地图API功能
+        var mp = new BMap.Map("allmap");
+        if (zone != null) {
+            mp.centerAndZoom(new BMap.Point(zone.x, zone.y), 17);
+        } else {
+            mp.centerAndZoom(new BMap.Point(113.545741, 22.371249), 17);
+        }
+        mp.enableScrollWheelZoom();
 
-	function createMap(zone) {
-		// 百度地图API功能
-		var mp = new BMap.Map("allmap");
-		if(zone != null){
-			mp.centerAndZoom(new BMap.Point(zone.x,zone.y), 17);
-		}else{
-			mp.centerAndZoom(new BMap.Point(113.545741,22.371249), 17);
-		}
-		mp.enableScrollWheelZoom();
-
-		//创建全局变量
-		window.map = mp;
-	}
+        //创建全局变量
+        window.map = mp;
+    }
 
 
-	function createHeatMarks(seekers) {
-    /* visible 热力图是否显示,默认为true
-    * opacity 热力的透明度,1-100
-    * radius 势力图的每个点的半径大小
-    * gradient  {JSON} 热力图的渐变区间
-     */
-    var points = [];
+    function createHeatMarks(seekers) {
+        /* visible 热力图是否显示,默认为true
+        * opacity 热力的透明度,1-100
+        * radius 势力图的每个点的半径大小
+        * gradient  {JSON} 热力图的渐变区间
+         */
+        var points = [];
 
-    $.each(seekers,function (index,item) {
-        var point = new BMap.Point(item.x,item.y);
-        var mac = getInfoBySeekerId(item.id);
-        var obj = {};
-        obj["lng"] = item.x;
-        obj["lat"] = item.y;
-        obj["count"] = 100;
-        points.push(obj);
+        $.each(seekers, function (index, item) {
+            var point = new BMap.Point(item.x, item.y);
+            var mac = getInfoBySeekerId(item.id);
+            var obj = {};
+            obj["lng"] = item.x;
+            obj["lat"] = item.y;
+            obj["count"] = 100;
+            points.push(obj);
+        });
+        console.log(points);
+        heatmapOverlay = new BMapLib.HeatmapOverlay({"radius": 40, "visible": true, "opacity": 70});
+        map.addOverlay(heatmapOverlay);
+        heatmapOverlay.setDataSet({data: points, max: 100});
+        heatmapOverlay.show();
+    }
+
+
+    //地图事件设置函数：
+    function setMapEvent() {
+        map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
+        map.enableScrollWheelZoom();//启用地图滚轮放大缩小
+        map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
+        map.enableKeyboard();//启用键盘上下左右键移动地图
+    }
+
+    //地图控件添加函数：
+    function addMapControl() {
+        //向地图中添加缩放控件
+        var ctrl_nav = new BMap.NavigationControl({anchor: BMAP_ANCHOR_TOP_LEFT, type: BMAP_NAVIGATION_CONTROL_ZOOM});
+        map.addControl(ctrl_nav);
+        //向地图中添加缩略图控件
+        var ctrl_ove = new BMap.OverviewMapControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT, isOpen: 1});
+        map.addControl(ctrl_ove);
+        //向地图中添加比例尺控件
+        var ctrl_sca = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_LEFT});
+        map.addControl(ctrl_sca);
+    }
+
+
+    //获取加载的覆盖点
+    function getSeekerByZoneId(id) {
+        var seekers = "";
+        $.ajax({
+            url: "/seeker/selectByZoneId/" + id,
+            type: "GET",
+            async: false,//同步
+            success: function (result) {
+                if (result.code == 100) {
+                    seekers = result.extend.seekers;
+                }
+            }
+        })
+        return seekers;
+    }
+
+    //获取选取地图id
+    function getSession() {
+        var id = "";
+        $.ajax({
+            // url:"/getSessionZoneId",
+            url: "/getSession/zoneId",
+            type: "GET",
+            async: false,//同步
+            success: function (result) {
+                if (result.code == 100) {
+                    id = result.extend.zoneId;
+                }
+                if (result.code == 200) {
+                    alert("请选取地图");
+                }
+            }
+        })
+        return id;
+    }
+
+    //获取选择的地图
+    function getZone(id) {
+        var zone = "";
+        $.ajax({
+            url: "/zone/" + id,
+            type: "GET",
+            async: false,//同步
+            success: function (result) {
+                if (result.code == 100) {
+                    zone = result.extend.zone;
+                }
+            }
+        })
+        return zone;
+    }
+
+
+    function getInfoBySeekerId(seekerId) {
+        var infos = "";
+        $.ajax({
+            url: "/info/selectBySeekerId/" + seekerId,
+            type: "GET",
+            async: false,//同步
+            success: function (data) {
+                if (data.code == 100) {
+                    infos = data.extend.infos;
+                }
+            }
+        })
+        return infos;
+    }
+
+
+    function resetMark(time) {
+        $.ajax({
+            // url:"/setSessionZoneId/"+$(this).attr("chose-id"),
+            url: "/setIntegerSession/times=" + time,
+            type: "POST",
+            success: function (result) {
+                if (result.code == 100) {
+                    createHeatMarks(getSeekerByZoneId(id));
+                }
+            }
+        });
+    }
+
+    $("#5min").click(function (ev) {
+        resetMark(300000);
     });
-    console.log(points);
-    heatmapOverlay = new BMapLib.HeatmapOverlay({"radius":40, "visible":true,"opacity":70});
-    map.addOverlay(heatmapOverlay);
-    heatmapOverlay.setDataSet({data:points,max:100});
-    heatmapOverlay.show();
-}
-
-
-
-//地图事件设置函数：
-function setMapEvent(){
-    map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
-    map.enableScrollWheelZoom();//启用地图滚轮放大缩小
-    map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
-    map.enableKeyboard();//启用键盘上下左右键移动地图
-}
-
-//地图控件添加函数：
-function addMapControl(){
-    //向地图中添加缩放控件
-    var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_ZOOM});
-    map.addControl(ctrl_nav);
-    //向地图中添加缩略图控件
-    var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
-    map.addControl(ctrl_ove);
-    //向地图中添加比例尺控件
-    var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
-    map.addControl(ctrl_sca);
-}
-
-
-
-//获取加载的覆盖点
-function getSeekerByZoneId(id) {
-    var seekers ="";
-    $.ajax({
-        url:"/seeker/selectByZoneId/"+id,
-        type:"GET",
-        async: false,//同步
-        success:function (result) {
-            if(result.code == 100){
-                seekers = result.extend.seekers;
-            }
-        }
-    })
-    return seekers;
-}
-
-//获取选取地图id
-function getSession() {
-    var id = "";
-    $.ajax({
-        // url:"/getSessionZoneId",
-        url:"/getSession/zoneId",
-        type:"GET",
-        async: false,//同步
-        success:function (result) {
-            if(result.code == 100){
-                id = result.extend.zoneId;
-            }
-            if(result.code == 200){
-                alert("请选取地图");
-            }
-        }
-    })
-    return id;
-}
-
-//获取选择的地图
-function getZone(id) {
-    var zone = "";
-    $.ajax({
-        url:"/zone/"+id,
-        type:"GET",
-        async: false,//同步
-        success:function (result) {
-            if(result.code == 100){
-                zone = result.extend.zone;
-            }
-        }
-    })
-    return zone;
-}
-
-
-function getInfoBySeekerId(seekerId) {
-    var infos = "";
-    $.ajax({
-        url:"/info/selectBySeekerId/"+seekerId,
-        type:"GET",
-        async:false,//同步
-        success:function (data) {
-            if(data.code == 100){
-                infos = data.extend.infos;
-            }
-        }
-    })
-    return infos;
-}
-
-
-
-function resetMark(time){
-    $.ajax({
-        // url:"/setSessionZoneId/"+$(this).attr("chose-id"),
-        url:"/setIntegerSession/times="+time,
-        type:"POST",
-        success:function (result) {
-            if(result.code == 100){
-                createHeatMarks(getSeekerByZoneId(id));
-            }
-        }
+    $("#1hour").click(function (ev) {
+        resetMark(3600000);
     });
-}
+    $("#1day").click(function (ev) {
+        resetMark(86400000);
+    });
+    $("#noTime").click(function (ev) {
+        resetMark(-1);//无限大
+    });
 
-$("#5min").click(function (ev) {
-    resetMark(300000);
-});
-$("#1hour").click(function (ev) {
-    resetMark(3600000);
-});$("#1day").click(function (ev) {
-    resetMark(86400000);
-});$("#noTime").click(function (ev) {
-    resetMark(-1);//无限大
-});
-
-initMap();
+    initMap();
 </script>
 
 

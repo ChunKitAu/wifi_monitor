@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Bean;
 public class MyBatisConfig {
 
     @Bean
-    public ConfigurationCustomizer configurationCustomizer(){
-        return  new ConfigurationCustomizer() {
+    public ConfigurationCustomizer configurationCustomizer() {
+        return new ConfigurationCustomizer() {
             //自定义驼峰命名
             @Override
             public void customize(Configuration configuration) {

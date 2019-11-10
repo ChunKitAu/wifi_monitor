@@ -37,7 +37,7 @@ public class SeekerServiceImpl implements SeekerService {
     @Override
     public Boolean UpdateIsForbidden(Integer id, Integer isForbidden) {
         System.out.println(isForbidden);
-        if(seekerMapper.UpdateIsForbidden(id,isForbidden) != -1){
+        if (seekerMapper.UpdateIsForbidden(id, isForbidden) != -1) {
             return true;
         }
         return false;

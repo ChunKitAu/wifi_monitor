@@ -1,6 +1,7 @@
 package com.chunkit.wifi_monitor.mapper;
 
 import com.chunkit.wifi_monitor.entity.Seeker;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -19,9 +20,10 @@ public interface SeekerMapper {
     public Seeker getSeekerById(Integer id);
 
     @Update("update seeker set  isForbidden = #{isForbidden}  where id = #{id} ")
-    public int UpdateIsForbidden(Integer id,Integer isForbidden);
+    public int UpdateIsForbidden(Integer id, Integer isForbidden);
 
     @Select("select * from seeker where zone_id = #{id} and isForbidden = 0")
     public List<Seeker> getSeekerByZoneId(Integer id);
+
 
 }

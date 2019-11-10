@@ -10,6 +10,9 @@
 
     <title>Dashboard Template for Bootstrap</title>
 
+    <!-- Bootstrap core JavaScript
+================================================== -->
+    <!--&lt;!&ndash; Placed at the end of the document so the pages load faster &ndash;&gt;-->
     <script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
             th:src="@{/webjars/jquery/3.3.1/jquery.js}"></script>
     <script type="text/javascript" src="asserts/js/popper.min.js"
@@ -17,9 +20,10 @@
     <script type="text/javascript" src="asserts/js/bootstrap.min.js"
             th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.bundle.js}"></script>
 
+    <script type="text/javascript" th:src="@{/webjars/echarts/4.1.0-release/dist/echarts.js}"></script>
+
     <!-- Bootstrap core CSS -->
     <link href="asserts/css/bootstrap.min.css" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.css}" rel="stylesheet">
-
     <!-- Custom styles for this template -->
     <link href="asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
     <style type="text/css">
@@ -48,6 +52,8 @@
             animation: chartjs-render-animation 0.001s;
         }
     </style>
+
+
 </head>
 
 <body>
@@ -58,35 +64,46 @@
 <div class="container-fluid">
     <div class="row">
         <!--引入侧边栏-->
-        <div th:replace="commons/bar::#sidebar(activeUri='index')"></div>
+        <div th:replace="commons/bar::#sidebar(activeUri='message')"></div>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div class="table-responsive">
-                <h2>随着计算机网络技术的发展，WIFI 技术的使用逐渐普及，如何通过WIFI探针技术进行数据采集及信息预警是目前研究的热点问题。本项目自主研发设计一套低成本的WIFI探针设备，通过分布式采集WIFI
-                    网络中终端主动发送探针的数据包的MAC 地址信息和RSSI
-                    信息，通过大数据处理平台对数据进行汇总分析，可以统计平时每个终端采集器附近手机终端数量的均值，同时可以统计多个终端采集器所代表的某个区域的手机终端数量的均值达到对大人流的预警。此外，通过百度地图的导入可以在地图上标注该手机经常的活动轨迹和指定终端的行为轨迹分析，实现大人流预警及人员轨迹跟踪，为城市公共安全管理供强有力的信息化支撑和保障
-                </h2>
-            </div>
+            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+            <div id="main" style="width: 600px;height:400px;text-align: center"></div>
+
+
         </main>
-
-        <form id="deleteEmpForm" method="post">
-            <input type="hidden" name="_method" value="delete"/>
-        </form>
-
     </div>
 </div>
 
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
 
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!--&lt;!&ndash; Placed at the end of the document so the pages load faster &ndash;&gt;-->
-<script type="text/javascript" src="asserts/js/jquery-3.2.1.slim.min.js"
-        th:src="@{/webjars/jquery/3.3.1/jquery.js}"></script>
-<script type="text/javascript" src="asserts/js/popper.min.js"
-        th:src="@{/webjars/popper.js/1.11.1/dist/popper.js}"></script>
-<script type="text/javascript" src="asserts/js/bootstrap.min.js"
-        th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.js}"></script>
 
+    $.get('/message/week/8733613', function (data) {//与服务器连接成功
+        console.log(data);//获取到的json数据是个对象
+        myChart.setOption(option = {
+            title: {
+                text: '人流情况'
+            },
+            tooltip: {},
+            legend: {
+                data: ['访问量']
+            },
+            xAxis: {
+                data: data.extend.xAxis,
+            },
+            yAxis: {},
+            series: [
+                {
+                    name: '人流量',
+                    type: 'bar',//line折线图,bar柱状
+                    data: data.extend.series,
+                }
+            ]
+        });
+    });
+</script>
 
 </body>
 </html>
